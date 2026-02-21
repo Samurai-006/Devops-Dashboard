@@ -1,0 +1,17 @@
+pipeline{
+    agent{
+        dockerfile true
+    }
+    stages{
+        stage("Installing dependencies"){
+            sh'''
+            npm install
+            '''
+        }
+        stage("Running and testing frontend"){
+            sh'''
+            npm start
+            '''
+        }
+    }
+}
