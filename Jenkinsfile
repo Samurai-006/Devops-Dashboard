@@ -1,7 +1,5 @@
 pipeline{
-    agent{
-        
-    }
+    agent any
     stages{
         stage("Installing dependencies"){
             steps{
