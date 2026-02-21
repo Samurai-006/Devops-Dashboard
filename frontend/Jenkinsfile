@@ -4,14 +4,18 @@ pipeline{
     }
     stages{
         stage("Installing dependencies"){
-            sh'''
-            npm install
-            '''
+            steps{
+                sh'''
+                npm install
+                '''
+            }
         }
         stage("Running and testing frontend"){
-            sh'''
-            npm start
-            '''
+            steps{
+                sh'''
+                npm start
+                '''
+            }
         }
     }
 }
