@@ -3,17 +3,17 @@ pipeline{
         
     }
     stages{
-        stage("Checking Port 5000"){
+        stage("Installing dependencies"){
             steps{
                 sh'''
-                ss -tnlp sport = :5000 |
+                npm install
                 '''
             }
         }
-        stage("Checking APIs"){
+        stage("Checking Backend"){
             steps{
                 sh'''
-                echo "APIs are secure and running"
+                node server.js
                 '''
             }
         }
