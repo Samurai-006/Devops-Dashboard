@@ -6,14 +6,14 @@ pipeline{
         stage("Installing dependencies"){
             steps{
                 sh'''
-                npm install
+                cd frontend && npm install
                 '''
             }
         }
         stage("Running and testing frontend"){
             steps{
                 sh'''
-                npm start
+                cd frontend && npm start
                 '''
             }
         }
