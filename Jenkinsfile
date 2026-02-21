@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage("Installing dependencies"){
             steps{
-                sh'''
+                bat'''
                 cd backend
                 npm install
                 '''
@@ -11,7 +11,7 @@ pipeline{
         }
         stage("Checking Backend"){
             steps{
-                sh'''
+                bat'''
                 cd backend
                 node server.js
                 '''
