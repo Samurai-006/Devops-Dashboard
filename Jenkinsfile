@@ -6,14 +6,14 @@ pipeline{
         stage("Installing dependencies"){
             steps{
                 sh'''
-                npm install
+                cd backend && npm install
                 '''
             }
         }
         stage("Checking Backend"){
             steps{
                 sh'''
-                node server.js
+                cd backend && node server.js
                 '''
             }
         }
