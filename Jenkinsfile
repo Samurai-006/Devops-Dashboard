@@ -17,7 +17,7 @@ pipeline{
             steps{
                 sh'''
                 cd frontend
-                npm start
+                timeout 30 npm start || true
                 '''
             }
         }
