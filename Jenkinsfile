@@ -7,7 +7,6 @@ pipeline{
         stage("Installing dependencies"){
             steps{
                 sh'''
-                docker run -it --rm --entrypoint sh node:24-alpine
                 node -v
                 npm -v
                 cd backend
