@@ -8,12 +8,8 @@ pipeline{
             steps{
                 bat'''
                 docker run -it --rm --entrypoint sh node:24-alpine
-                
-                //Verify the Node.js version:
-                node -v // Should print "v24.14.0".
-                
-                //Verify npm version:
-                npm -v // Should print "11.9.0".
+                node -v
+                npm -v
                 cd backend
                 npm install
                 '''
