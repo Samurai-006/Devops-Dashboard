@@ -15,12 +15,13 @@ pipeline{
             }
         }
         stage("Checking Backend"){
+            options{
+                timeout(time: 2, units: 'MINUTES')
+            }
             steps{
                 sh'''
                 cd backend
                 node server.js
-                //curl 
-                xdg-open http://localhost:5000
                 '''
             }
         }
