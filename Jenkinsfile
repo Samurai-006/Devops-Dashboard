@@ -14,7 +14,7 @@ pipeline{
                 '''
             }
         }
-        stage("Checking Backend"){
+        stage("Testing Backend"){
             options{
                 timeout(time: 2, unit: 'MINUTES')
             }
