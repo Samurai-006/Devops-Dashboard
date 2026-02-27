@@ -23,7 +23,8 @@ pipeline{
             }
         }
         stage("Deploy container (HOST)"){
-            agent any{
+            agent any
+            steps{
                 sh 'docker run -d 5000:5000 devops-backend'
             }
         }
