@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage("Installing dependencies"){
             steps{
-                bat'''
+                sh'''
                 cd frontend
                 npm install
                 '''
@@ -11,7 +11,7 @@ pipeline{
         }
         stage("Running and testing frontend"){
             steps{
-                bat'''
+                sh'''
                 cd frontend
                 npm start
                 '''
