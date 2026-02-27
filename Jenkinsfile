@@ -1,23 +1,26 @@
 pipeline{
-    agent{
-        docker{
-            image 'node:24-alpine'
-        }
-    }
+    agent none
     stages{
-        stage("Installing dependencies"){
+        stage("Install and Test"){
+            agent{
+                docker{
+                    image 'node:24-alpine'
+                }
+            }
             steps{
                 sh'''
                 cd frontend
                 npm install
+                timeout 30 npm start || true
                 '''
             }
         }
-        stage("Running and testing frontend"){
+        stage("Building and running Docker Container (FRONTEND)"){
+            agent any
             steps{
                 sh'''
-                cd frontend
-                timeout 30 npm start || true
+                docker build -t devops-frontend ./frontend
+                timeout 60 docker run -p 3000 devops-frontend || true
                 '''
             }
         }
