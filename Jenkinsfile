@@ -24,7 +24,8 @@ pipeline{
                 node server.js
                 '''
             }
-        }stage("Release backend"){
+        }
+        stage("Release backend"){
             steps{
                 sh 'echo "Backend released successfully"'
             }
