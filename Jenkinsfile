@@ -21,13 +21,13 @@ pipeline{
             steps{
                 sh'''
                 cd backend
-                node server.js
+                npm test
                 '''
             }
         }
         stage("Release backend"){
             steps{
-                sh 'echo "Backend released successfully"'
+                sh 'docker build -t devops-backend ./backend'
             }
         }
     }
