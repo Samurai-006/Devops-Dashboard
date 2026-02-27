@@ -20,7 +20,7 @@ pipeline{
             steps{
                 sh'''
                 docker build -t devops-frontend ./frontend
-                timeout 60 docker run -p 3000 devops-frontend || true
+                timeout 60 docker run -p 3000:3000 devops-frontend || true
                 '''
             }
         }
