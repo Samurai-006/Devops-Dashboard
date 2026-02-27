@@ -1,12 +1,12 @@
 pipeline{
     agent {
         //Pull the Node.js Docker image:
-        docker pull node:24-alpine
+        docker { image 'node:24-alpine' }
     }
     stages{
         stage("Installing dependencies"){
             steps{
-                bat'''
+                sh'''
                 docker run -it --rm --entrypoint sh node:24-alpine
                 node -v
                 npm -v
@@ -17,7 +17,7 @@ pipeline{
         }
         stage("Checking Backend"){
             steps{
-                bat'''
+                sh'''
                 cd backend
                 node server.js
                 '''
