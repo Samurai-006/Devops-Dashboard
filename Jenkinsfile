@@ -29,6 +29,7 @@ pipeline{
                     timeout(time: 2, unit: 'MINUTES'){
                         sh 'docker run -p 5000:5000 devops-backend'
                     }
+                }
             }
         }
     }
