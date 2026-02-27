@@ -26,9 +26,7 @@ pipeline{
             agent any
             steps{
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE'){
-                    timeout(time: 2, unit: 'MINUTES'){
-                        sh 'docker run -p 5000:5000 devops-backend'
-                    }
+                    sh 'timeout 120 docker run -p 5000:5000 devops-backend || true'
                 }
             }
         }
