@@ -10,7 +10,7 @@ pipeline{
                 node -v
                 npm -v
                 cd backend
-                npm install
+                npm install --save-dev jest
                 '''
             }
         }
