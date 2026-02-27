@@ -19,6 +19,8 @@ pipeline{
                 sh'''
                 cd backend
                 node server.js
+                //curl 
+                xdg-open http://localhost:5000
                 '''
             }
         }
