@@ -6,18 +6,18 @@ function App() {
   const [deployments, setDeployments] = useState([]);
 
   useEffect(() => {
-    axios.get("http://backend:5000/deployments")
+    axios.get("http://localhost:5000/deployments")
       .then(res => setDeployments(res.data));
   }, []);
 
   const triggerDeploy = async () => {
-    await axios.post("http://backend:5000/deploy");
+    await axios.post("http://localhost:5000/deploy");
     window.location.reload();
   };
 
   const [logs, setLogs] = useState([]);
   const fetchLogs = async () => {
-    const res = await axios.get("http://backend:5000/logs");
+    const res = await axios.get("http://localhost:5000/logs");
     setLogs(res.data);
   };
 
@@ -34,7 +34,7 @@ function App() {
 
   const [health, setHealth] = useState({});
   const checkHealth = async () => {
-    const res = await axios.get("http://backend:5000/health");
+    const res = await axios.get("http://localhost:5000/health");
     setHealth(res.data);
   };
 
@@ -43,7 +43,7 @@ function App() {
       <h1>DevOps Dashboard</h1>
 
       <button onClick={triggerDeploy}>
-        Deploy Backend
+        Deploy localhost
       </button>
 
       <h2>Deployment History</h2>
@@ -86,7 +86,7 @@ function App() {
       <button onClick={checkHealth}>Check Status</button>
 
       <ul>
-        <li>Backend: {health.backend}</li>
+        <li>localhost: {health.localhost}</li>
         <li>Database: {health.database}</li>
         <li>Frontend: {health.frontend}</li>
       </ul>
