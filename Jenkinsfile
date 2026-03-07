@@ -22,12 +22,14 @@ pipeline{
                 sh 'docker build -t devops-backend ./backend'
             }
         }
-        stage("Deploy container (HOST)"){
+        stage("Deploy container (HOST)") {
             agent any
-            steps{
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE'){
-                    sh 'timeout 120 docker run -p 5000:5000 devops-backend || true'
-                }
+            steps {
+                sh '''
+                docker stop devops-backend 2>/dev/null || true
+                docker rm devops-backend 2>/dev/null || true
+                docker run -d -p 5000:5000 --name devops-backend devops-backend
+                '''
             }
         }
     }
