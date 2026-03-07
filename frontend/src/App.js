@@ -6,7 +6,7 @@ function App() {
   const [deployments, setDeployments] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/deployments")
+    axios.get("http://backend:5000/deployments")
       .then(res => setDeployments(res.data));
   }, []);
 
