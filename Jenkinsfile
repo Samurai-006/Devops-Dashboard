@@ -18,9 +18,11 @@ pipeline{
         stage("Building and running Docker Container (FRONTEND)"){
             agent any
             steps{
-                sh'''
+                sh '''
                 docker build -t devops-frontend ./frontend
-                timeout 60 docker run -p 3000:3000 devops-frontend || true
+                docker stop devops-frontend || true
+                docker rm devops-frontend || true
+                docker run -d -p 3000:3000 --name devops-frontend devops-frontend
                 '''
             }
         }
