@@ -11,7 +11,7 @@ pipeline{
                 sh'''
                 cd frontend
                 npm install
-                timeout 30 npm start || true
+                timeout 30 npm start & npm test || true
                 '''
             }
         }
