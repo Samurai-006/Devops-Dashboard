@@ -25,13 +25,13 @@ pipeline {
 
         stage('Build Containers') {
             steps {
-                sh 'docker-compose build'
+                sh 'docker compose build'
             }
         }
 
         stage('Deploy Stack') {
             steps {
-                sh 'docker-compose up -d'
+                sh 'docker compose up -d'
             }
         }
     }
