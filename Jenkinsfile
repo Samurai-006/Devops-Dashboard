@@ -15,8 +15,10 @@ pipeline {
                 script {
                     env.GIT_SHA_SHORT = sh(returnStdout: true, script: 'git rev-parse --short=8 HEAD').trim()
                     env.IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_SHA_SHORT}"
-                    env.BACKEND_IMAGE = "${env.DOCKER_REGISTRY}/${env.DOCKER_NAMESPACE}/devops-dashboard-backend"
-                    env.FRONTEND_IMAGE = "${env.DOCKER_REGISTRY}/${env.DOCKER_NAMESPACE}/devops-dashboard-frontend"
+                    env.REGISTRY_URL = env.DOCKER_REGISTRY == 'docker.io' ? 'https://index.docker.io/v1/' : "https://${env.DOCKER_REGISTRY}"
+                    env.REGISTRY_REPO_PREFIX = env.DOCKER_REGISTRY == 'docker.io' ? env.DOCKER_NAMESPACE : "${env.DOCKER_REGISTRY}/${env.DOCKER_NAMESPACE}"
+                    env.BACKEND_IMAGE = "${env.REGISTRY_REPO_PREFIX}/devops-dashboard-backend"
+                    env.FRONTEND_IMAGE = "${env.REGISTRY_REPO_PREFIX}/devops-dashboard-frontend"
                 }
             }
         }
@@ -67,7 +69,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry("https://${env.DOCKER_REGISTRY}", env.DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry(env.REGISTRY_URL, env.DOCKER_CREDENTIALS_ID) {
                         def backendImage = docker.build(
                             "${env.BACKEND_IMAGE}:${env.IMAGE_TAG}",
                             './backend'
@@ -102,6 +104,7 @@ pipeline {
     post {
         always {
             echo "Artifact publish config: registry=${env.DOCKER_REGISTRY ?: 'not-set'}, namespace=${env.DOCKER_NAMESPACE ?: 'not-set'}"
+            echo "Artifact publish endpoint: ${env.REGISTRY_URL ?: 'not-set'}"
             echo "Published image tag for this run: ${env.IMAGE_TAG ?: 'not-generated'}"
         }
     }
