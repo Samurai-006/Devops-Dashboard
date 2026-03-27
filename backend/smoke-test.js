@@ -69,8 +69,11 @@ async function run() {
 
   await waitFor(async () => {
     const page = await fetchText(frontendBaseUrl);
-    if (!page.includes("DevOps Dashboard")) {
-      throw new Error("Frontend page did not contain dashboard title");
+    const hasExpectedTitle = page.includes("<title>DevOps Dashboard</title>");
+    const hasRootElement = page.includes('<div id="root"></div>');
+
+    if (!hasExpectedTitle || !hasRootElement) {
+      throw new Error("Frontend page did not return the expected application shell");
     }
   }, "frontend homepage");
 
