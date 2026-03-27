@@ -13,22 +13,30 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
+const apiUrl = (path) => `${API_BASE_URL}${path}`;
+
 function App() {
   const [deployments, setDeployments] = useState([]);
 
+  const loadDeployments = async () => {
+    const res = await axios.get(apiUrl("/deployments"));
+    setDeployments(res.data);
+  };
+
   useEffect(() => {
-    axios.get("http://localhost:5000/deployments")
-      .then(res => setDeployments(res.data));
+    loadDeployments();
   }, []);
 
   const triggerDeploy = async () => {
-    await axios.post("http://localhost:5000/deploy");
-    window.location.reload();
+    await axios.post(apiUrl("/deploy"));
+    await loadDeployments();
   };
 
   const [logs, setLogs] = useState([]);
   const fetchLogs = async () => {
-    const res = await axios.get("http://localhost:5000/logs");
+    const res = await axios.get(apiUrl("/logs"));
     setLogs(res.data);
   };
 
@@ -45,7 +53,7 @@ function App() {
 
   const [health, setHealth] = useState({});
   const checkHealth = async () => {
-    const res = await axios.get("http://localhost:5000/health");
+    const res = await axios.get(apiUrl("/health"));
     setHealth(res.data);
   };
 
@@ -97,7 +105,7 @@ function App() {
       <button onClick={checkHealth}>Check Status</button>
 
       <ul>
-        <li>localhost: {health.localhost}</li>
+        <li>Backend: {health.backend}</li>
         <li>Database: {health.database}</li>
         <li>Frontend: {health.frontend}</li>
       </ul>
