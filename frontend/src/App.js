@@ -13,7 +13,8 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+const runtimeConfig = window.__APP_CONFIG__ || {};
+const API_BASE_URL = runtimeConfig.API_BASE_URL || process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const apiUrl = (path) => `${API_BASE_URL}${path}`;
 
