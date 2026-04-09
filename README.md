@@ -65,38 +65,7 @@ Basic workflow:
 
 Jenkins deployment:
 
-- set `DEPLOY_TARGET_PLATFORM=kubernetes`
-- keep using the published backend/frontend image artifacts
-- Jenkins will apply the Kubernetes manifests and update the deployment images to the selected tag
-
-## Jenkins Kubernetes access
-
-If Jenkins runs in Docker, it also needs `kubectl` and access to your local kubeconfig.
-
-Files included for this setup:
-
-- [jenkins/Dockerfile]
-- [jenkins/docker-compose.jenkins.yml]
-
-What they do:
-
-- install `docker` CLI and `kubectl` in the Jenkins container
-- mount the Docker socket so Jenkins can build/push images
-- mount your local kubeconfig from `%USERPROFILE%\.kube` into `/var/jenkins_home/.kube`
-- expose `KUBECONFIG=/var/jenkins_home/.kube/config`
-
-Typical startup:
-
-1. Stop your old Jenkins container if needed.
-2. Start Jenkins with:
-   `docker compose -f jenkins/docker-compose.jenkins.yml up -d --build`
-3. Open Jenkins on:
-   `http://localhost:8080`
-4. Inside Jenkins, verify:
-   `kubectl config current-context`
-   `kubectl get nodes`
-
-The pipeline Kubernetes stage now also prints the current context and nodes before applying manifests, which makes setup issues easier to diagnose.
+Kubernetes deployment is manual for this demo. Publish the images through Jenkins first, then apply or update the cluster from your local terminal.
 
 Files:
 

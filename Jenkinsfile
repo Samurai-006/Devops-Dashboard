@@ -4,7 +4,6 @@ pipeline {
     parameters {
         choice(name: 'DEPLOY_ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment for deployment')
         choice(name: 'DEPLOY_MODE', choices: ['build_and_publish', 'promote_existing'], description: 'Build new artifacts or promote an existing published image tag')
-        choice(name: 'DEPLOY_TARGET_PLATFORM', choices: ['compose', 'kubernetes'], description: 'Deployment target platform')
         string(name: 'PROMOTE_IMAGE_TAG', defaultValue: '', description: 'Existing published image tag to deploy when DEPLOY_MODE=promote_existing')
     }
 
@@ -12,7 +11,6 @@ pipeline {
         DOCKER_REGISTRY = "${env.DOCKER_REGISTRY ?: ''}"
         DOCKER_NAMESPACE = "${env.DOCKER_NAMESPACE ?: ''}"
         DOCKER_CREDENTIALS_ID = "${env.DOCKER_CREDENTIALS_ID ?: ''}"
-        KUBECONFIG = "${env.KUBECONFIG ?: '/var/jenkins_home/.kube/config'}"
     }
 
     stages {
@@ -24,7 +22,6 @@ pipeline {
                     env.GIT_SHA_SHORT = sh(returnStdout: true, script: 'git rev-parse --short=8 HEAD').trim()
                     env.IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_SHA_SHORT}"
                     env.DEPLOY_MODE_SELECTED = params.DEPLOY_MODE ?: 'build_and_publish'
-                    env.DEPLOY_PLATFORM = params.DEPLOY_TARGET_PLATFORM ?: 'compose'
                     env.REGISTRY_URL = env.DOCKER_REGISTRY == 'docker.io' ? 'https://index.docker.io/v1/' : "https://${env.DOCKER_REGISTRY}"
                     env.REGISTRY_REPO_PREFIX = env.DOCKER_REGISTRY == 'docker.io' ? env.DOCKER_NAMESPACE : "${env.DOCKER_REGISTRY}/${env.DOCKER_NAMESPACE}"
                     env.BACKEND_IMAGE = "${env.REGISTRY_REPO_PREFIX}/devops-dashboard-backend"
@@ -117,9 +114,6 @@ pipeline {
         }
 
         stage('Deploy Stack') {
-            when {
-                expression { env.DEPLOY_PLATFORM == 'compose' }
-            }
             steps {
                 script {
                     if (env.DOCKER_REGISTRY?.trim() && env.DOCKER_NAMESPACE?.trim() && env.DOCKER_CREDENTIALS_ID?.trim()) {
@@ -134,31 +128,10 @@ pipeline {
             }
         }
 
-        stage('Deploy To Kubernetes') {
-            when {
-                expression {
-                    return env.DEPLOY_PLATFORM == 'kubernetes' &&
-                        env.DOCKER_REGISTRY?.trim() &&
-                        env.DOCKER_NAMESPACE?.trim()
-                }
-            }
-            steps {
-                sh 'kubectl config current-context'
-                sh 'kubectl get nodes'
-                sh 'kubectl apply -k k8s'
-                sh "kubectl set image deployment/backend backend=${env.BACKEND_IMAGE}:${env.DEPLOY_IMAGE_TAG} -n devops-dashboard"
-                sh "kubectl set image deployment/frontend frontend=${env.FRONTEND_IMAGE}:${env.DEPLOY_IMAGE_TAG} -n devops-dashboard"
-                sh 'kubectl rollout status deployment/backend -n devops-dashboard'
-                sh 'kubectl rollout status deployment/frontend -n devops-dashboard'
-            }
-        }
-
         stage('Regression Smoke Test') {
             steps {
                 script {
-                    if (env.DEPLOY_PLATFORM == 'kubernetes') {
-                        sh 'kubectl get all -n devops-dashboard'
-                    } else if (env.DOCKER_REGISTRY?.trim() && env.DOCKER_NAMESPACE?.trim() && env.DOCKER_CREDENTIALS_ID?.trim()) {
+                    if (env.DOCKER_REGISTRY?.trim() && env.DOCKER_NAMESPACE?.trim() && env.DOCKER_CREDENTIALS_ID?.trim()) {
                         sh "docker compose --project-name devops-${env.DEPLOY_TARGET} --env-file deploy/.env.${env.DEPLOY_TARGET} -f docker-compose.deploy.yml exec -T backend npm run smoke"
                     } else {
                         sh 'docker compose exec -T backend npm run smoke'
@@ -174,7 +147,6 @@ pipeline {
             echo "Artifact publish endpoint: ${env.REGISTRY_URL ?: 'not-set'}"
             echo "Deploy target: ${env.DEPLOY_TARGET ?: 'not-set'}"
             echo "Deploy mode: ${env.DEPLOY_MODE_SELECTED ?: 'not-set'}"
-            echo "Deploy platform: ${env.DEPLOY_PLATFORM ?: 'not-set'}"
             echo "Deploy image tag: ${env.DEPLOY_IMAGE_TAG ?: 'not-set'}"
             echo "Published image tag for this run: ${env.IMAGE_TAG ?: 'not-generated'}"
         }
