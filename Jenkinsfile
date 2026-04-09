@@ -12,6 +12,7 @@ pipeline {
         DOCKER_REGISTRY = "${env.DOCKER_REGISTRY ?: ''}"
         DOCKER_NAMESPACE = "${env.DOCKER_NAMESPACE ?: ''}"
         DOCKER_CREDENTIALS_ID = "${env.DOCKER_CREDENTIALS_ID ?: ''}"
+        KUBECONFIG = "${env.KUBECONFIG ?: '/var/jenkins_home/.kube/config'}"
     }
 
     stages {
@@ -142,6 +143,8 @@ pipeline {
                 }
             }
             steps {
+                sh 'kubectl config current-context'
+                sh 'kubectl get nodes'
                 sh 'kubectl apply -k k8s'
                 sh "kubectl set image deployment/backend backend=${env.BACKEND_IMAGE}:${env.DEPLOY_IMAGE_TAG} -n devops-dashboard"
                 sh "kubectl set image deployment/frontend frontend=${env.FRONTEND_IMAGE}:${env.DEPLOY_IMAGE_TAG} -n devops-dashboard"
